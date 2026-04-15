@@ -21,7 +21,7 @@
 
 最新版本 `agents7.md` 引入了**原子化 CLI 操作层**：
 
-- **唯一入口**：`harness.py` 是 AI 操作 `.ai/` 记忆库的唯一方式
+- **唯一入口**：harness-agent skill 是 AI 操作 `.ai/` 记忆库的唯一方式，其底层通过原子化 CLI 完成所有文件变更
 - **禁止直接文件操作**：AI 不得使用 `Read/Edit/Write` 直接修改 `.ai/` 下任何文件
 - **任务快照隔离**：每个任务拥有独立的 `.ai/snapshots/{task_id}.md`
 - **快速状态恢复**：`task resume` 输出结构化信息，主Agent按需恢复上下文
@@ -29,10 +29,10 @@
 
 ## 快速开始
 
-1. 将 `skills/harness-agent/` 复制到你的项目
-2. 初始化记忆库：`python skills/harness-agent/harness.py init`
-3. 将 `skills/harness-agent/SKILL.md` 注入你的 AI 系统提示
-4. 所有任务操作由 AI 自动调用 harness CLI 完成
+1. 将 harness-agent skill 安装到你的 OpenCode 全局 skill 路径
+2. 初始化记忆库：从 skill 目录执行 `python harness.py init`
+3. 将 harness-agent skill 注入你的 AI 系统提示
+4. 所有任务操作由 AI 自动调用 harness-agent skill 完成
 
 ## 设计理念
 

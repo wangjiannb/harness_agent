@@ -5,37 +5,37 @@ description: 在需要通过 harness.py CLI 操作 AI 任务记忆（.ai/ 目录
 
 # Harness Agent 操作手册
 
-当你看到或即将执行任何涉及 `.ai/` 目录、`harness.py`、任务创建/恢复/归档/检查点的操作时，必须完整阅读并执行本 skill 的每一条指令。同时遵守 `agents7.md` 中的架构约束。
+当你看到或即将执行任何涉及 `.ai/` 目录、任务创建/恢复/归档/检查点的操作时，必须完整阅读并执行本 skill 的每一条指令。同时遵守 `agents7.md` 中的架构约束。
 
 ## 铁律
 
 - **严禁** 主 Agent 直接执行任何 `Read/Edit/Write/Bash` 工具。
 - **严禁** 任何 agent 直接触碰 `.ai/` 目录下的文件。
-- 所有 `.ai/` 交互和 `harness.py` 调用，必须通过本 skill 规定的 subagent 分工完成。
+- 所有 `.ai/` 交互和 harness-agent skill 调用，必须通过本 skill 规定的 subagent 分工完成。
 
 ## 角色分工
 
 - **主Agent**：负责理解用户意图、推理决策、调度 subagent。不直接执行任何工具。
 - **explore subagent**：负责读取业务代码、搜索代码库、返回结构化摘要。
-- **general subagent**：负责执行 `Bash`（包括所有 `harness.py` CLI 命令）、`Edit`、`Write`。
+- **general subagent**：负责执行 `Bash`（包括所有 harness-agent skill CLI 命令）、`Edit`、`Write`。
 
 ## 命令速查
 
 ### 初始化（每个项目一次）
 ```bash
-python skills/harness-agent/harness.py init [--project-name "项目名"]
+python harness.py init [--project-name "项目名"]
 ```
 
 ### 任务生命周期
 ```bash
-python skills/harness-agent/harness.py task create "任务名" --prefix auth
-python skills/harness-agent/harness.py task resume auth-001
-python skills/harness-agent/harness.py task archive auth-001
+python harness.py task create "任务名" --prefix auth
+python harness.py task resume auth-001
+python harness.py task archive auth-001
 ```
 
 ### 检查点（同时更新 task + snapshot）
 ```bash
-python skills/harness-agent/harness.py checkpoint auth-001 \
+python harness.py checkpoint auth-001 \
   --stage "中间件改造" \
   --progress 60 \
   --todo "第一行\n第二行" \
@@ -51,14 +51,14 @@ python skills/harness-agent/harness.py checkpoint auth-001 \
 
 ### 知识库
 ```bash
-python skills/harness-agent/harness.py lesson "Redis连接池需设置超时"
-python skills/harness-agent/harness.py tech --title "ADR-001" --content "..."
+python harness.py lesson "Redis连接池需设置超时"
+python harness.py tech --title "ADR-001" --content "..."
 ```
 
 ### 环境
 ```bash
-python skills/harness-agent/harness.py env
-python skills/harness-agent/harness.py env --key python --value 3.12
+python harness.py env
+python harness.py env --key python --value 3.12
 ```
 
 ## 操作流程
@@ -66,7 +66,7 @@ python skills/harness-agent/harness.py env --key python --value 3.12
 ### 新建任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python skills/harness-agent/harness.py task create "{名称}" --prefix {前缀}
+   python harness.py task create "{名称}" --prefix {前缀}
    ```
 2. general subagent 将 CLI 输出的新 ID（如 `auth-001`）返回给主Agent
 3. 主Agent 汇报：「已新建 {id}」
@@ -74,7 +74,7 @@ python skills/harness-agent/harness.py env --key python --value 3.12
 ### 继续任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python skills/harness-agent/harness.py task resume {id}
+   python harness.py task resume {id}
    ```
 2. general subagent 解析 stdout，将以下字段返回给主Agent：
    task_name、stage、progress、focus_file、focus_line、focus_function、next_action、blocker、context_count
@@ -84,7 +84,7 @@ python skills/harness-agent/harness.py env --key python --value 3.12
 ### 归档任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python skills/harness-agent/harness.py task archive {id}
+   python harness.py task archive {id}
    ```
 2. general subagent 确认 CLI 执行成功
 3. 主Agent 汇报：「{id} 已完成归档」
