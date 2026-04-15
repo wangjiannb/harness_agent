@@ -6,35 +6,33 @@
 
 ```
 .
-├── hist_agent/          # AI 任务记忆控制器协议
-│   ├── agents1.md ~ agents5.md   # 历史迭代版本
-│   ├── agents6.md                # 当前最新版本（v8.0）
-│   └── templates/                # 标准文件模板
-│       ├── backlog.md
-│       ├── task.md
-│       ├── snapshot.md
-│       ├── environment.md
-│       ├── tech-spec.md
-│       ├── lessons.md
-│       └── archive.md
+├── skills/
+│   └── harness-agent/   # AI 任务记忆控制器 skill
+│       ├── SKILL.md     # AI 行为指令
+│       └── harness.py   # 原子化 CLI 入口
+├── hist_agent/          # 协议文档
+│   ├── agents1.md ~ agents6.md   # 历史迭代版本
+│   └── agents7.md                # 当前最新版本（v9.0）
 ├── sessions/            # 历史会话记录
 └── LICENSE
 ```
 
 ## 核心设计
 
-最新版本 `agents6.md` 引入了**按任务隔离的快照机制**：
+最新版本 `agents7.md` 引入了**原子化 CLI 操作层**：
 
-- **启动唯一必读**：`environment.md`
+- **唯一入口**：`harness.py` 是 AI 操作 `.ai/` 记忆库的唯一方式
+- **禁止直接文件操作**：AI 不得使用 `Read/Edit/Write` 直接修改 `.ai/` 下任何文件
 - **任务快照隔离**：每个任务拥有独立的 `.ai/snapshots/{task_id}.md`
-- **快速状态恢复**：快照记录当前代码焦点（focus）、关联上下文（context ≤ 5 项）、下一步行动和阻塞项，重启后无需重新搜索代码库
-- **任务文档职责分离**：`.ai/tasks/{task_id}.md` 只保留任务元数据、目标和待办事项，不记录代码位置
+- **快速状态恢复**：`task resume` 输出结构化信息，主Agent按需恢复上下文
+- **确定性操作**：新建、继续、归档、检查点全部原子化，彻底消除文件遗漏
 
 ## 快速开始
 
-1. 复制 `hist_agent/templates/` 下的模板到你的项目 `.ai/` 目录
-2. 按照 `hist_agent/agents6.md` 中的启动协议和任务指令分流操作
-3. 每次阶段推进时更新对应任务的快照文件，即可实现秒级状态恢复
+1. 将 `skills/harness-agent/` 复制到你的项目
+2. 初始化记忆库：`python skills/harness-agent/harness.py init`
+3. 将 `skills/harness-agent/SKILL.md` 注入你的 AI 系统提示
+4. 所有任务操作由 AI 自动调用 harness CLI 完成
 
 ## 协议演进
 
@@ -45,7 +43,8 @@
 | v3.0 | `agents3.md` | 增加环境模板 |
 | v4.0 | `agents4.md` | 引入子 agent 分工 |
 | v5.0 | `agents5.md` | 增加自动记忆捕获 |
-| **v8.0** | **`agents6.md`** | **任务快照隔离、快速状态恢复** |
+| v8.0 | `agents6.md` | 任务快照隔离、快速状态恢复 |
+| **v9.0** | **`agents7.md`** | **原子化 CLI、skill 封装、确定性文件操作** |
 
 ## License
 
