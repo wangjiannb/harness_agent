@@ -2,43 +2,41 @@
 
 ## 核心原则
 
-1. **确定性原则**
-   所有 `.ai/` 文件的状态变更必须通过单一原子入口完成，禁止多步编辑。
+1. **单一入口原则**
+   系统任意时刻对记忆库的状态变更，有且只有一个被授权的原子入口（`harness.py` CLI）。禁止分散的多路径写入。
 
-2. **接口契约**
-   `harness.py` 是唯一的格式化层。AI 只传递原始内容，不控制 frontmatter、缩进、分段等格式细节。
+2. **代理隔离原则**
+   主 Agent 仅保留推理与调度权。所有 `Read/Edit/Write/Bash` 等工具操作，以及对 `harness.py` CLI 的调用，必须通过 explore / general 等 subagent 代理执行。
 
-3. **读写分离原则**
-   AI 不直接读取 `.ai/` 文件。状态恢复信息由 `task resume` 通过 stdout 交付，AI 解析输出即可。
+3. **显式优于隐式原则**
+   任何状态迁移（新建、推进、归档、记忆捕获）必须由显式指令触发。禁止 AI 静默推断并修改文件。
 
-4. **扩展规则**
-   如需新增记忆类型，必须同时修改 `harness.py`（原子操作）和 `harness-agent skill`（AI 行为指令），不得在协议外增加手工步骤。
+4. **不可变历史原则**
+   归档记录、经验教训、技术决策、检查点历史版本只追加、不修改、不删除。
 
-5. **回滚原则**
-   `archive` 操作必须保留带时间戳的原始文件副本，archive 记录不可删除只可追加。
-
-6. **上下文约束**
-   snapshot 的 focus/context 仅指向业务代码路径，不内嵌大段代码（snippet ≤ 80 字符）。
+5. **最小上下文原则**
+   快照只存储代码定位信息（file/line/function/snippet ≤ 80 字符），不内嵌业务逻辑。状态恢复依赖按需读取，而非预加载。
 
 ## 目录结构
 
 ```
 .ai/
 ├── memory-bank/
-│   ├── backlog.md       # CLI 维护
-│   ├── archive.md       # CLI 维护
-│   ├── tech-spec.md     # CLI 维护
-│   ├── lessons.md       # CLI 维护
-│   └── environment.md   # CLI 维护
+│   ├── backlog.md
+│   ├── archive.md
+│   ├── tech-spec.md
+│   ├── lessons.md
+│   └── environment.md
 ├── tasks/
-│   ├── {id}.md          # CLI 生成和更新
-│   └── archive/         # CLI 归档
+│   ├── {id}.md
+│   └── archive/
 └── snapshots/
-    ├── {id}.md          # CLI 生成和更新
-    └── archive/         # CLI 归档
+    ├── {id}.md
+    └── archive/
 ```
 
-## 与 Skill 的关系
+## 使用入口
 
-`agents7.md` 定义架构与约束。
-**具体操作指令见 `skills/harness-agent/SKILL.md`。**
+任何涉及 `.ai/` 或 `harness.py` 的操作，AI 必须同时遵循：
+- `skills/harness-agent/SKILL.md`（操作指令）
+- 本文件 `agents7.md`（架构约束）
