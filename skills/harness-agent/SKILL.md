@@ -28,14 +28,14 @@ python harness.py init [--project-name "项目名"]
 
 ### 任务生命周期
 ```bash
-python harness.py task create "任务名" --prefix auth
-python harness.py task resume auth-001
-python harness.py task archive auth-001
+python ~/.config/opencode/skills/harness-agent/harness.py task create "任务名" --prefix auth
+python ~/.config/opencode/skills/harness-agent/harness.py task resume auth-001
+python ~/.config/opencode/skills/harness-agent/harness.py task archive auth-001
 ```
 
 ### 检查点（同时更新 task + snapshot）
 ```bash
-python harness.py checkpoint auth-001 \
+python ~/.config/opencode/skills/harness-agent/harness.py checkpoint auth-001 \
   --stage "中间件改造" \
   --progress 60 \
   --todo "第一行\n第二行" \
@@ -51,14 +51,14 @@ python harness.py checkpoint auth-001 \
 
 ### 知识库
 ```bash
-python harness.py lesson "Redis连接池需设置超时"
-python harness.py tech --title "ADR-001" --content "..."
+python ~/.config/opencode/skills/harness-agent/harness.py lesson "Redis连接池需设置超时"
+python ~/.config/opencode/skills/harness-agent/harness.py tech --title "ADR-001" --content "..."
 ```
 
 ### 环境
 ```bash
-python harness.py env
-python harness.py env --key python --value 3.12
+python ~/.config/opencode/skills/harness-agent/harness.py env
+python ~/.config/opencode/skills/harness-agent/harness.py env --key python --value 3.12
 ```
 
 ## 操作流程
@@ -66,7 +66,7 @@ python harness.py env --key python --value 3.12
 ### 新建任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python harness.py task create "{名称}" --prefix {前缀}
+   python ~/.config/opencode/skills/harness-agent/harness.py task create "{名称}" --prefix {前缀}
    ```
 2. general subagent 将 CLI 输出的新 ID（如 `auth-001`）返回给主Agent
 3. 主Agent 汇报：「已新建 {id}」
@@ -74,7 +74,7 @@ python harness.py env --key python --value 3.12
 ### 继续任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python harness.py task resume {id}
+   python ~/.config/opencode/skills/harness-agent/harness.py task resume {id}
    ```
 2. general subagent 解析 stdout，将以下字段返回给主Agent：
    task_name、stage、progress、focus_file、focus_line、focus_function、next_action、blocker、context_count
@@ -84,7 +84,7 @@ python harness.py env --key python --value 3.12
 ### 归档任务
 1. 主Agent 调度 general subagent 执行：
    ```bash
-   python harness.py task archive {id}
+   python ~/.config/opencode/skills/harness-agent/harness.py task archive {id}
    ```
 2. general subagent 确认 CLI 执行成功
 3. 主Agent 汇报：「{id} 已完成归档」
